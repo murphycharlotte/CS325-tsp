@@ -81,6 +81,7 @@ int main(int argc, char *argv[]){
 	
 	//for each city, add closest, unvisited neighbor to next position in the tour
 	//indicate closest neighbor as visited
+	cityList[nRoute[0]].visited = 1;
 	for (int i = 0; i < size - 1; i++) {
 		nRoute[i + 1] = nearestNeighbor(size, cityList, nRoute[i]);
 		cityList[nRoute[i + 1]].visited = 1;
