@@ -99,8 +99,8 @@ int main(int argc, char *argv[]){
 	//Print each route and distance from previous city side by side
 	std::cout << nRoute[0] << "\t0\t\t" << tRoute[0] << "\t0" << std::endl;
 	for (int i = 1; i < 20; i++){
-		std::cout << nRoute[i] << "\t" << distance(cityList[nRoute[i] - 1], cityList[nRoute[i]]) << "\t\t";
-		std::cout << tRoute[i] << " \t" << distance(cityList[tRoute[i] - 1], cityList[tRoute[i]]) << "\t";
+		std::cout << nRoute[i] << "\t" << distance(cityList[nRoute[i - 1]], cityList[nRoute[i]]) << "\t\t";
+		std::cout << tRoute[i] << " \t" << distance(cityList[tRoute[i - 1]], cityList[tRoute[i]]) << "\t";
 
 		if (nRoute[i] != tRoute[i]) 
 			std::cout << "!!!";
