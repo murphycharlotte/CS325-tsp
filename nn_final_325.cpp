@@ -108,9 +108,9 @@ int main(int argc, char *argv[]){
 	inputFile.close();
 	
 	/*
-	 * begin solving tsp problem below
+	 * begin solving classic 2-opt tsp problem below
 	 */
-	//classic tour
+
 	int tourLen = -1;
 	int tourLen2 = -1;
 
@@ -126,7 +126,10 @@ int main(int argc, char *argv[]){
     }
     while (tourLen != tourLen2);
 	
-    //tour beginning with nearest neighbor search
+    /*
+	 * begin solving nearest neightbor search with 2-opt tsp problem below
+	 */
+
     //add start city id to nearest neighbor route
 	nnRoute[0] = route[0];
 	//indicate start city as visited
@@ -154,7 +157,7 @@ int main(int argc, char *argv[]){
     while (nnTourLen != nnTourLen2);
 
     if(DEBUG) {
-	    print improved tour
+	    //print improved tours
 	    for (int i = 0; i < size; i++){
 	        std::cout << route[i] << " ";
 	    }
