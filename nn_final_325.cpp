@@ -96,7 +96,7 @@ int main(int argc, char *argv[]){
 			std::cout << " count is " << count << " and cityList's size is " << cityList.size() << " !!!!!!!!\n";
 	}
 	
-	/
+	
 	if(DEBUG){
 		std::cout << tourLength(route, size, cityList) << "\n";
 		for(int i = 0; i < size; i++)
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]){
 	    for (int i = 0; i < size; i++){
 	        std::cout << nnRoute[i] << " ";
 	    }
-	    std::cout << "nn length: " << nntourLen << std::endl << std::endl;
+	    std::cout << "nn length: " << nnTourLen << std::endl << std::endl;
 	}
 
 	//output improved tour distance and route to file
