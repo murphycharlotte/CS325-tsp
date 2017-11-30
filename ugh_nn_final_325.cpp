@@ -164,17 +164,13 @@ int nearestNeighbor(int size, std::vector<city> &mycityList, int curCity){
 	int tempDist;
 	int nearestNeighbor;
 	//loop through all cities
-			std::cout << "Min Dist = " << minDist << "\n";
-
 	for (int i = 0; i < size; i++) {
 		if (mycityList[i].visited != 1)	{
 			tempDist = distance(mycityList[curCity], mycityList[i]);
-					std::cout << "Temp Dist = " << tempDist << "\n";
 			//if city at index i is unvisited & closest neighbor 
 			if (minDist == 0 || tempDist < minDist) {
 				minDist = tempDist;
 				nearestNeighbor = i;
-				std::cout << "new min\n";
 			}
 		}
 	}
