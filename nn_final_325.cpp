@@ -102,7 +102,7 @@ int main(int argc, char *argv[]){
 	if(DEBUG){
 		std::cout << tourLength(route, size, cityList) << "\n";
 		for(int i = 0; i < size; i++)
-			std::cout<< cityList[i].id << " " << cityList[i].x <<" " << cityList[i].y << "\n\n";
+			std::cout<< cityList[i].id << " " << cityList[i].x <<" " << cityList[i].y << "\n";
 	}
 	
 	
@@ -228,18 +228,15 @@ void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> 
 	int newRouteIdx;
 	int tempCity;
 	//indicate start city as visited
-	mycityList[myRoute[0]].visited = 1;
 	//for each city, add closest, unvisited neighbor to next position in tour
 	//indicate closest neighbor as visited
 	for (int i = 0; i < size - 1; i++) {
-		//minDist gets distance to next city in tour
 		minDist = 0;
 		//newRouteIdx gets index of next city in tour
 		newRouteIdx = i + 1;
 		//if a closer, unvisited city is found, update minDist and newRouteIdx 
 		for (int j = i + 1; j < size; j++) {
 			tempDist = distance(mycityList[myRoute[i]], mycityList[myRoute[j]]);
-			// ------- ? Do we need to check and set the visited value in this implementation?
 			if ((minDist == 0) || (tempDist < minDist)){
 				minDist = tempDist;
 				newRouteIdx = j;
@@ -252,7 +249,6 @@ void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> 
 			myRoute[newRouteIdx] = tempCity;
 		}
 		//indicate neighbor as visited
-		mycityList[myRoute[i + 1]].visited = 1;
 	}
 }
 
