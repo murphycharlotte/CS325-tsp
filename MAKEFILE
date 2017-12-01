@@ -1,0 +1,33 @@
+CFLAGS = -Wall -g
+
+tsp: tsp.h tsp.cpp
+	g++ tsp.cpp tsp.h -o tsp $(CFLAGS)
+
+examples: tsp
+	#run and verify examples 1-3
+	./tsp tsp_example_1.txt tsp_example_1.txt.tour
+	./tsp-verifier.py tsp_example_1.txt tsp_example_1.txt.tour
+	./tsp tsp_example_2.txt tsp_example_2.txt.tour
+	./tsp-verifier.py tsp_example_2.txt tsp_example_2.txt.tour
+	./tsp tsp_example_3.txt tsp_example_3.txt.tour
+	./tsp-verifier.py tsp_example_3.txt tsp_example_3.txt.tour
+
+tests: tsp
+	#run, time, and verify tests 1-7
+	./watch.py ./tsp test-input-1.txt test-input-1.txt.tour
+	./tsp-verifier.py test-input-1.txt test-input-1.txt.tour
+	./watch.py ./tsp test-input-2.txt test-input-2.txt.tour
+	./tsp-verifier.py test-input-2.txt test-input-2.txt.tour	
+	./watch.py ./tsp test-input-3.txt test-input-3.txt.tour
+	./tsp-verifier.py test-input-3.txt test-input-3.txt.tour
+	./watch.py ./tsp test-input-4.txt test-input-4.txt.tour
+	./tsp-verifier.py test-input-4.txt test-input-4.txt.tour
+	./watch.py ./tsp test-input-5.txt test-input-5.txt.tour
+	./tsp-verifier.py test-input-5.txt test-input-5.txt.tour
+	./watch.py ./tsp test-input-6.txt test-input-6.txt.tour
+	./tsp-verifier.py test-input-6.txt test-input-6.txt.tour
+	./watch.py ./tsp test-input-7.txt test-input-7.txt.tour
+	./tsp-verifier.py test-input-7.txt test-input-7.txt.tour
+
+clean:
+	rm -f *.o tsp

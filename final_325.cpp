@@ -14,19 +14,16 @@
 
 
  //change DEBUG to 0 to run without debugging output messages
- #define DEBUG 0
+ #define DEBUG 1
 
 //struct city holds three ints, the id, the x coordinate, and the y coordinate
 struct city{
 	int id;
 	int x;
 	int y;
-	int visited;
 };
 
 int distance(struct city a, struct city b);
-
-void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
 
 int tourLength(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
 
@@ -36,7 +33,7 @@ std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city>
 
 int main(int argc, char *argv[]){
 	//make sure number of arguments is correct
-	if ((argc != 3) && (argc != 2)){
+	if (argc != 3){
 		std::cout<<"Invalid number of arguments\n";
 		return 0;
 	}
@@ -53,7 +50,8 @@ int main(int argc, char *argv[]){
 	//container to hold cities
 	std::vector<city> cityList;
 	int count = 0; //used for testing
-	while(std::getline(inputFile, line)){
+	while(!inputFile.eof()){
+		std::getline(inputFile, line);
 		std::stringstream cityStrm(line);
 		struct city temp;
 		cityStrm>>temp.id>>temp.x>>temp.y;
@@ -61,14 +59,12 @@ int main(int argc, char *argv[]){
 		count++;
 	}
 	
-	int size = (int)cityList.size(); //var to store city list size;
+	int listSize = (int)cityList.size();
 
-	//vectors of city ids representing a tour
-	std::vector<int> tRoute(size);	// nearest neighbor search tour
-
-	//classic route gets city ids in order per input file
-	for (int i = 0; i < size; i++) {
-		tRoute[i] = cityList[i].id;
+	//vector of cityList indices representing a tour
+	std::vector<int> route(listSize);
+	for (int i = 0; i < listSize; i++) {
+		route[i] = i;
 	}
 
 	if (DEBUG){
@@ -87,16 +83,15 @@ int main(int argc, char *argv[]){
 	}
 	
 	if(DEBUG){
-		if(count == size)
+		if(count == listSize)
 			std::cout << "count matches cityList size \n";
 		else
 			std::cout << " count is " << count << " and cityList's size is " << cityList.size() << " !!!!!!!!\n";
 	}
 	
-	
 	if(DEBUG){
-		std::cout << tourLength(tRoute, size, cityList) << "\n";
-		for(int i = 0; i < size; i++)
+		std::cout << tourLength(route, listSize, cityList) << "\n";
+		for(int i = 0; i < listSize; i++)
 			std::cout<< cityList[i].id << " " << cityList[i].x <<" " << cityList[i].y << "\n";
 	}
 	
@@ -104,29 +99,30 @@ int main(int argc, char *argv[]){
 	//close file
 	inputFile.close();
 	
-    int tTourLen = -1;
-	int tTourLen2 = -1;
-
-	nearestNeighborTour(tRoute, size, cityList);
+	/*
+	 * begin solving tsp problem below
+	 */
+	int tourLen = -1;
+	int tourLen2 = -1;
 
 	do{
 
         //initial tour length
-        tTourLen = tourLength(tRoute, size, cityList);
+        tourLen = tourLength(route, listSize, cityList);
         //compares edge switches to see if they improve length
-        tRoute = TSP_2opt(tRoute, size, cityList);
+        route = TSP_2opt(route, listSize, cityList);
         //improved on 1 pass length
-        tTourLen2 = tourLength(tRoute, size, cityList);
+        tourLen2 = tourLength(route, listSize, cityList);
 
     }
-    while (tTourLen != tTourLen2);
+    while (tourLen != tourLen2);
 
     if(DEBUG) {
 	    //print improved tour
-	    for (int i = 0; i < size; i++){
-	        std::cout << tRoute[i] << " ";
+	    for (int i = 0; i < listSize; i++){
+	        std::cout << route[i] << " ";
 	    }
-	    std::cout << "\nTour length: " << tTourLen << std::endl << std::endl;
+	    std::cout << "length: " << tourLen << std::endl;
 	}
 
 	//output improved tour distance and route to file
@@ -134,15 +130,14 @@ int main(int argc, char *argv[]){
 	outputFile.open(argv[2]);
 	//check for successfull file open
 	if(!outputFile.is_open()){
-	    std::cout << "\nTour length: " << tTourLen << std::endl << std::endl;
 		std::cout<<"Could Not Open File: " << argv[2] << "\n";
 		return 0;
 	}
 	
-	outputFile << tTourLen << std::endl;
+	outputFile << tourLen << std::endl;
 
-	for (int j = 0; j < size; j++){
-		outputFile << cityList[tRoute[j]].id << std::endl;
+	for (int j = 0; j < listSize; j++){
+		outputFile << cityList[j].id << std::endl;
 	}
 
 	outputFile.close();
@@ -157,37 +152,6 @@ int main(int argc, char *argv[]){
 int distance(struct city a, struct city b){
 	return round(sqrt(pow((b.x - a.x),2) + pow((b.y - a.y),2)));
 } 
-
-void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> &mycityList){
-
-	int minDist;
-	int tempDist;
-	int newRouteIdx;
-	int tempCity;
-	//indicate start city as visited
-	//for each city, add closest, unvisited neighbor to next position in tour
-	//indicate closest neighbor as visited
-	for (int i = 0; i < size - 1; i++) {
-		minDist = 0;
-		//newRouteIdx gets index of next city in tour
-		newRouteIdx = i + 1;
-		//if a closer, unvisited city is found, update minDist and newRouteIdx 
-		for (int j = i + 1; j < size; j++) {
-			tempDist = distance(mycityList[myRoute[i]], mycityList[myRoute[j]]);
-			if ((minDist == 0) || (tempDist < minDist)){
-				minDist = tempDist;
-				newRouteIdx = j;
-			}
-		}
-		//if a closer city is found, swap city positions
-		if (newRouteIdx > (i + 1)) {
-			tempCity = myRoute[i + 1];
-			myRoute[i + 1] = myRoute[newRouteIdx];
-			myRoute[newRouteIdx] = tempCity;
-		}
-		//indicate neighbor as visited
-	}
-}
 
 //helper for 2 opt
 //finds the length of a tour given by a vector of integers
