@@ -26,6 +26,8 @@ struct city{
 
 int distance(struct city a, struct city b);
 
+void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
+
 int nearestNeighbor(int size, std::vector<city> &mycityList, int curCity);
 
 int tourLength(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
@@ -53,8 +55,7 @@ int main(int argc, char *argv[]){
 	//container to hold cities
 	std::vector<city> cityList;
 	int count = 0; //used for testing
-	while(!inputFile.eof()){
-		std::getline(inputFile, line);
+	while(std::getline(inputFile, line)){
 		std::stringstream cityStrm(line);
 		struct city temp;
 		cityStrm>>temp.id>>temp.x>>temp.y;
@@ -67,10 +68,11 @@ int main(int argc, char *argv[]){
 	//vectors of city ids representing a tour
 	std::vector<int> route(size);	//classic tour
 	std::vector<int> nnRoute(size);	// nearest neighbor search tour
+	std::vector<int> tRoute(size);	// nearest neighbor search tour
 
 	//classic route gets city ids in order per input file
 	for (int i = 0; i < size; i++) {
-		route[i] = cityList[i].id;
+		route[i] = nnRoute[i] = tRoute[i] = cityList[i].id;
 		cityList[i].visited = 0;
 	}
 
@@ -100,7 +102,7 @@ int main(int argc, char *argv[]){
 	if(DEBUG){
 		std::cout << tourLength(route, size, cityList) << "\n";
 		for(int i = 0; i < size; i++)
-			std::cout<< cityList[i].id << " " << cityList[i].x <<" " << cityList[i].y << "\n";
+			std::cout<< cityList[i].id << " " << cityList[i].x <<" " << cityList[i].y << "\n\n";
 	}
 	
 	
@@ -156,17 +158,39 @@ int main(int argc, char *argv[]){
     }
     while (nnTourLen != nnTourLen2);
 
+    int tTourLen = -1;
+	int tTourLen2 = -1;
+
+	nearestNeighborTour(tRoute, size, cityList);
+
+	do{
+
+        //initial tour length
+        tTourLen = tourLength(tRoute, size, cityList);
+        //compares edge switches to see if they improve length
+        tRoute = TSP_2opt(tRoute, size, cityList);
+        //improved on 1 pass length
+        tTourLen2 = tourLength(tRoute, size, cityList);
+
+    }
+    while (tTourLen != tTourLen2);
+
     if(DEBUG) {
 	    //print improved tours
 	    for (int i = 0; i < size; i++){
 	        std::cout << route[i] << " ";
 	    }
-	    std::cout << "classic length: " << tourLen << std::endl << std::endl;
+	    std::cout << "\ncl length: " << tourLen << std::endl << std::endl;
 
 	    for (int i = 0; i < size; i++){
 	        std::cout << nnRoute[i] << " ";
 	    }
-	    std::cout << "nn length: " << nnTourLen << std::endl << std::endl;
+	    std::cout << "\nnn length: " << nnTourLen << std::endl << std::endl;
+
+	     for (int i = 0; i < size; i++){
+	        std::cout << tRoute[i] << " ";
+	    }
+	    std::cout << "\nnt length: " << tTourLen << std::endl << std::endl;
 	}
 
 	//output improved tour distance and route to file
@@ -197,17 +221,52 @@ int distance(struct city a, struct city b){
 	return round(sqrt(pow((b.x - a.x),2) + pow((b.y - a.y),2)));
 } 
 
+void nearestNeighborTour(std::vector<int> &myRoute, int size, std::vector<city> &mycityList){
+
+	int minDist;
+	int tempDist;
+	int newRouteIdx;
+	int tempCity;
+	//indicate start city as visited
+	mycityList[myRoute[0]].visited = 1;
+	//for each city, add closest, unvisited neighbor to next position in tour
+	//indicate closest neighbor as visited
+	for (int i = 0; i < size - 1; i++) {
+		//minDist gets distance to next city in tour
+		minDist = 0;
+		//newRouteIdx gets index of next city in tour
+		newRouteIdx = i + 1;
+		//if a closer, unvisited city is found, update minDist and newRouteIdx 
+		for (int j = i + 1; j < size; j++) {
+			tempDist = distance(mycityList[myRoute[i]], mycityList[myRoute[j]]);
+			// ------- ? Do we need to check and set the visited value in this implementation?
+			if ((minDist == 0) || (tempDist < minDist)){
+				minDist = tempDist;
+				newRouteIdx = j;
+			}
+		}
+		//if a closer city is found, swap city positions
+		if (newRouteIdx > (i + 1)) {
+			tempCity = myRoute[i + 1];
+			myRoute[i + 1] = myRoute[newRouteIdx];
+			myRoute[newRouteIdx] = tempCity;
+		}
+		//indicate neighbor as visited
+		mycityList[myRoute[i + 1]].visited = 1;
+	}
+}
+
 //given an index of a city in cityList, finds index of closest, unvisted city
 int nearestNeighbor(int size, std::vector<city> &mycityList, int curCity){
-	int minDist = 2147483647;
-	int nearestNeighbor;
+	int minDist = 0;
 	int tempDist;
+	int nearestNeighbor;
 	//loop through all cities
-	for (int i = 0; i < size - 1; i++) {
+	for (int i = 0; i < size; i++) {
 		if (mycityList[i].visited != 1)	{
 			tempDist = distance(mycityList[curCity], mycityList[i]);
 			//if city at index i is unvisited & closest neighbor 
-			if (tempDist < minDist) {
+			if (minDist == 0 || tempDist < minDist) {
 				minDist = tempDist;
 				nearestNeighbor = i;
 			}
