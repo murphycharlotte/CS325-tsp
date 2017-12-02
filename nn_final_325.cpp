@@ -33,7 +33,7 @@ int tourLength(std::vector<int> &myRoute, int size, std::vector<city> &mycityLis
 
 std::vector<int> swapEdges(std::vector<int> &myRoute, int i, int k);
 
-std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
+std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city> &mycityList, int dist);
 
 int main(int argc, char *argv[]){
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
         	//initial tour length
         	tTourLen = tourLength(tRoute, size, cityList);
         	//compares edge switches to see if they improve length
-        	tRoute = TSP_2opt(tRoute, size, cityList);
+        	tRoute = TSP_2opt(tRoute, size, cityList, tTourLen);
         	//improved on 1 pass length
         	tTourLen2 = tourLength(tRoute, size, cityList);
 
