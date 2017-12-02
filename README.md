@@ -22,3 +22,9 @@ enter: make all_tests
 
 to remove all object files, .tour files, and tsp object file
 enter: make clean
+
+example tour results are included as follows, where * is 1 through 3 inclusive:
+results_tsp_example_*.txt.tour
+
+test tour results are included as follows, where * is 1 through 7 inclusive:
+results-test-input-*.txt.tour
