@@ -11,6 +11,7 @@
  #include <string>
  #include <vector>
  #include <cmath>
+ #include <cstring>
 
 
  //change DEBUG to 0 to run without debugging output messages
@@ -131,7 +132,11 @@ int main(int argc, char *argv[]){
 
 	//output improved tour distance and route to file
 	std::ofstream outputFile;
-	outputFile.open(argv[2]);
+	char ofName[256];
+	memset(&ofName, '\0', 256);
+	strcpy(ofName, argv[1]);
+	strcat(ofName, ".tour");
+	outputFile.open(ofName);
 	//check for successfull file open
 	if(!outputFile.is_open()){
 	    std::cout << "\nTour length: " << tTourLen << std::endl << std::endl;
@@ -146,6 +151,7 @@ int main(int argc, char *argv[]){
 	}
 
 	outputFile.close();
+
 	
 	return 0;
 	
