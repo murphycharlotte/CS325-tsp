@@ -115,19 +115,18 @@ int main(int argc, char *argv[]){
 	int tTourLen2 = -1;
 
 	nearestNeighborTour(tRoute, size, cityList);
-	if (size < 300) {
-		do{
-
+    do{
+	if (size <= 250) {
         	//initial tour length
         	tTourLen = tourLength(tRoute, size, cityList);
         	//compares edge switches to see if they improve length
         	tRoute = TSP_2opt(tRoute, size, cityList, tTourLen);
         	//improved on 1 pass length
         	tTourLen2 = tourLength(tRoute, size, cityList);
-
-    	}
-    	while (tTourLen != tTourLen2);
 	}
+    }
+    while (tTourLen != tTourLen2);
+	
 
     if(DEBUG) {
 	    //print improved tour
@@ -161,10 +160,9 @@ int main(int argc, char *argv[]){
 
 	t1 = clock() - t1;
     double time_elapsed = ((double)t1) / CLOCKS_PER_SEC;
-    printf("Insertion sort took: %f seconds\n", time_elapsed);
-
+    printf("TSP took: %f seconds\n", time_elapsed);
 	
-	return 0;
+    return 0;
 	
 } //end main
 
@@ -264,7 +262,6 @@ std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city>
             approxRoute = swapEdges(myRoute, i, k);
             newDist = tourLength(approxRoute, size, mycityList);
             if (newDist < curDist){
-                curDist = newDist;
                 bestRoute = approxRoute
             }
         }
