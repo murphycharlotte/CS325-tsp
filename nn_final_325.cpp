@@ -36,6 +36,12 @@ std::vector<int> swapEdges(std::vector<int> &myRoute, int i, int k);
 std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city> &mycityList);
 
 int main(int argc, char *argv[]){
+
+	//begin timing
+    
+    clock_t t1;
+    t1 = clock();
+
 	//make sure number of arguments is correct
 	if ((argc != 3) && (argc != 2)){
 		std::cout<<"Invalid number of arguments\n";
@@ -109,18 +115,19 @@ int main(int argc, char *argv[]){
 	int tTourLen2 = -1;
 
 	nearestNeighborTour(tRoute, size, cityList);
+	if (size < 300) {
+		do{
 
-	do{
+        	//initial tour length
+        	tTourLen = tourLength(tRoute, size, cityList);
+        	//compares edge switches to see if they improve length
+        	tRoute = TSP_2opt(tRoute, size, cityList);
+        	//improved on 1 pass length
+        	tTourLen2 = tourLength(tRoute, size, cityList);
 
-        //initial tour length
-        tTourLen = tourLength(tRoute, size, cityList);
-        //compares edge switches to see if they improve length
-        tRoute = TSP_2opt(tRoute, size, cityList);
-        //improved on 1 pass length
-        tTourLen2 = tourLength(tRoute, size, cityList);
-
-    }
-    while (tTourLen != tTourLen2);
+    	}
+    	while (tTourLen != tTourLen2);
+	}
 
     if(DEBUG) {
 	    //print improved tour
@@ -151,6 +158,10 @@ int main(int argc, char *argv[]){
 	}
 
 	outputFile.close();
+
+	t1 = clock() - t1;
+    double time_elapsed = ((double)t1) / CLOCKS_PER_SEC;
+    printf("Insertion sort took: %f seconds\n", time_elapsed);
 
 	
 	return 0;
@@ -242,18 +253,19 @@ std::vector<int> swapEdges(std::vector<int> &myRoute, int i, int k){
 //need to continue this as long as it improves tour length
 //put it in a do-while loop
 //tests if edge swithces are an improvement
-std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city> &mycityList){
+std::vector<int> TSP_2opt(std::vector<int> &myRoute, int size, std::vector<city> &mycityList, int dist){
     std::vector<int> approxRoute(size);
     std::vector<int> bestRoute(size);
     bestRoute = myRoute;
-    int curDist = tourLength(myRoute, size, mycityList);
+    int curDist = dist;
     int newDist = 0;
     for (int i = 1; i < size; i++){
         for (int k = i + 1; k < size; k++){
             approxRoute = swapEdges(myRoute, i, k);
             newDist = tourLength(approxRoute, size, mycityList);
             if (newDist < curDist){
-                bestRoute = approxRoute;
+                curDist = newDist;
+                bestRoute = approxRoute
             }
         }
     }
